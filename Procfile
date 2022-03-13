@@ -1,1 +1,1 @@
-               worker: maim.py
+web: python main.py
