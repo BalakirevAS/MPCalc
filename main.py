@@ -6,6 +6,9 @@ from selenium.webdriver.common.by import By
 from tradingview_ta import TA_Handler
 import telebot
 from telebot import types
+import os
+from flask import Flask, request
+
 
 
 def calculator(summ, coin_dict):  # Калькулятор стоимости от общей суммы
@@ -85,8 +88,9 @@ def parsing_web():
 price_t = dict()
 msg_list = dict()
 
-MPCalc_bot = telebot.TeleBot('5110887553:AAElcOlMkHepEkas3ip15IWZL6iZCupLC7U')
-
+TOKEN = '5110887553:AAElcOlMkHepEkas3ip15IWZL6iZCupLC7U'
+MPCalc_bot = telebot.TeleBot(TOKEN)
+server = Flask(__name__)
 
 @MPCalc_bot.message_handler(commands=['start'])
 def greeting_msg(message):
@@ -163,6 +167,26 @@ def save_summ(message):
         MPCalc_bot.send_message(message.chat.id, 'Введено некорректное значение!')
         msg = MPCalc_bot.send_message(message.chat.id, 'Введите целое количество для расчёта (без точек и запятых):')
         MPCalc_bot.register_next_step_handler(msg, save_summ)
+
+
+@server.route('/' + TOKEN, methods=['POST'])
+def getMessage():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    MPCalc_bot.process_new_updates([update])
+    return "!", 200
+
+
+@server.route("/")
+def webhook():
+    MPCalc_bot.remove_webhook()
+    MPCalc_bot.set_webhook(url='https://mp-calulator.herokuapp.com/' + TOKEN)
+    return "!", 200
+
+
+if __name__ == "__main__":
+    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+
 
 
 MPCalc_bot.infinity_polling()
