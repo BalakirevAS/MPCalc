@@ -1,0 +1,6 @@
+time
+requests
+selenium
+bs4
+tradingview_ta
+telebot
