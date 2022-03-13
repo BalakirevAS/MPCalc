@@ -90,11 +90,10 @@ MPCalc_bot = telebot.TeleBot('5110887553:AAElcOlMkHepEkas3ip15IWZL6iZCupLC7U')
 
 @MPCalc_bot.message_handler(commands=['start'])
 def greeting_msg(message):
-    if message.text != 'Возвращаемся!':
-        MPCalc_bot.send_message(message.chat.id, 'Привет, {0.first_name}! \nЯ MPCalc - MinePlex Calculator!'
-                                                 ' Я могу показать актуальные курсы Plex, Mine, USDT, '
-                                                 'а также посчитать общую сумму при конвертации!'
-                                .format(message.from_user))
+    MPCalc_bot.send_message(message.chat.id, 'Привет, {0.first_name}! \nЯ MPCalc - MinePlex Calculator!'
+                                             ' Я могу показать актуальные курсы Plex, Mine, USDT, '
+                                             'а также посчитать общую сумму при конвертации!'
+                            .format(message.from_user))
     menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
     b_rate = types.KeyboardButton('Курсы валют')
     b_calc = types.KeyboardButton('Калькулятор')
@@ -142,22 +141,28 @@ def ticket_msg(message):
         MPCalc_bot.register_next_step_handler(msg, menu_msg)
     else:
         msg_list['ticket'] = message.text
-        msg = MPCalc_bot.send_message(message.chat.id, 'Введите количество для расчёта')
+        msg = MPCalc_bot.send_message(message.chat.id, 'Введите целое количество для расчёта (без точек и запятых):')
         MPCalc_bot.register_next_step_handler(msg, save_summ)
 
 
 def save_summ(message):
-    MPCalc_bot.send_message(message.chat.id, 'Подождите, сейчас посчитаю...')
-    price_t = parsing_web()
-    msg_list['summ'] = int(message.text)
-    answer = calculator(msg_list.get('summ'), price_t.get(msg_list.get('ticket')))
-    for i, j in answer.items():
-        MPCalc_bot.send_message(message.chat.id, '{} {} = {} {}'.format(msg_list['summ'], msg_list['ticket'], j, i))
-    MPCalc_bot.send_message(message.chat.id, 'Все предложения и пожелания по работе бота '
-                                             'вы можете написать мне в личку @ASBalakirev.'
-                                             '\nЕсли захотите отблагодарить за работу, мой ID: 452516701.')
-    msg = MPCalc_bot.send_message(message.chat.id, 'Выберите действие:')
-    MPCalc_bot.register_next_step_handler(msg, ticket_msg)
+    chek_msg = message.text
+    if chek_msg.isdigit():
+        MPCalc_bot.send_message(message.chat.id, 'Подождите, сейчас посчитаю...')
+        price_t = parsing_web()
+        msg_list['summ'] = int(message.text)
+        answer = calculator(msg_list.get('summ'), price_t.get(msg_list.get('ticket')))
+        for i, j in answer.items():
+            MPCalc_bot.send_message(message.chat.id, '{} {} = {} {}'.format(msg_list['summ'], msg_list['ticket'], j, i))
+        MPCalc_bot.send_message(message.chat.id, 'Все предложения и пожелания по работе бота '
+                                                 'вы можете написать мне в личку @ASBalakirev.'
+                                                 '\nЕсли захотите отблагодарить за работу, мой ID: 452516701.')
+        msg = MPCalc_bot.send_message(message.chat.id, 'Выберите действие:')
+        MPCalc_bot.register_next_step_handler(msg, ticket_msg)
+    else:
+        MPCalc_bot.send_message(message.chat.id, 'Введено некорректное значение!')
+        msg = MPCalc_bot.send_message(message.chat.id, 'Введите целое количество для расчёта (без точек и запятых):')
+        MPCalc_bot.register_next_step_handler(msg, save_summ)
 
 
 MPCalc_bot.infinity_polling()
