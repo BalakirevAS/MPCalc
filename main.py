@@ -40,7 +40,13 @@ def exchange_rate():  # Курс монет
 
 def parsing_web():
     # Курс plex в mine по explorer
-    mp_driver = webdriver.Chrome()
+    # mp_driver = webdriver.Chrome()
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox")
+    mp_driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
     plex_mine_price = float(mp_driver.find_element(By.CLASS_NAME, value='Header').text)
@@ -88,9 +94,9 @@ def parsing_web():
 price_t = dict()
 msg_list = dict()
 
-TOKEN = '5110887553:AAElcOlMkHepEkas3ip15IWZL6iZCupLC7U'
+TOKEN = '5110887553:AAHnM3w5U0FsvstxFG2lleN5kvvakcRubEE'
 MPCalc_bot = telebot.TeleBot(TOKEN)
-server = Flask(__name__)
+# server = Flask(__name__)
 
 @MPCalc_bot.message_handler(commands=['start'])
 def greeting_msg(message):
@@ -169,23 +175,23 @@ def save_summ(message):
         MPCalc_bot.register_next_step_handler(msg, save_summ)
 
 
-@server.route('/' + TOKEN, methods=['POST'])
-def getMessage():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    MPCalc_bot.process_new_updates([update])
-    return "!", 200
-
-
-@server.route("/")
-def webhook():
-    MPCalc_bot.remove_webhook()
-    MPCalc_bot.set_webhook(url='https://mp-calulator.herokuapp.com/' + TOKEN)
-    return "!", 200
-
-
-if __name__ == "__main__":
-    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+# @server.route('/' + TOKEN, methods=['POST'])
+# def getMessage():
+#     json_string = request.get_data().decode('utf-8')
+#     update = telebot.types.Update.de_json(json_string)
+#     MPCalc_bot.process_new_updates([update])
+#     return "!", 200
+#
+#
+# @server.route("/")
+# def webhook():
+#     MPCalc_bot.remove_webhook()
+#     MPCalc_bot.set_webhook(url='https://mp-calulator.herokuapp.com/' + TOKEN)
+#     return "!", 200
+#
+#
+# if __name__ == "__main__":
+#     server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
 
 
 
