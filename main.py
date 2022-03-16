@@ -164,9 +164,12 @@ def save_summ(message):
         answer = calculator(msg_list.get('summ'), price_t.get(msg_list.get('ticket')))
         for i, j in answer.items():
             MPCalc_bot.send_message(message.chat.id, '{} {} = {} {}'.format(msg_list['summ'], msg_list['ticket'], j, i))
-        MPCalc_bot.send_message(message.chat.id, 'Все предложения и пожелания по работе бота '
-                                                 'вы можете написать мне в личку @ASBalakirev.'
-                                                 '\nЕсли захотите отблагодарить за работу, мой ID: 452516701.')
+        MPCalc_bot.send_message(message.chat.id, 'Если бот не отвечает, введите повторно команду /start.'
+                                                 '\nВсе предложения и пожелания по работе бота'
+                                                 ' вы можете написать мне в личку @ASBalakirev.'
+                                                 '\nБот бесплатный, но для поддержания хостинга и дальнейшего совершенствования, '
+                                                 'или если захотите просто отблагодарить за работу, приму 200mine или 0,5plex.'
+                                                 '\nМой ID: 452516701.')
         msg = MPCalc_bot.send_message(message.chat.id, 'Выберите действие:')
         MPCalc_bot.register_next_step_handler(msg, ticket_msg)
     else:
@@ -192,7 +195,6 @@ def webhook():
 
 if __name__ == "__main__":
     server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
-
 
 
 MPCalc_bot.infinity_polling()
