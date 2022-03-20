@@ -25,14 +25,17 @@ def exchange_rate():  # Курс монет
         '1 PLEX': {
             'MINE': price.get('PLEX').get('mine'),
             'USDT': price.get('PLEX').get('usdt'),
-            'RUB': price.get('PLEX').get('rub')
+            'RUB': price.get('PLEX').get('rub'),
+            'KZT': price.get('PLEX').get('kzt')
         },
         '1 MINE': {
             'USDT': price.get('MINE').get('usdt'),
-            'RUB': price.get('MINE').get('rub')
+            'RUB': price.get('MINE').get('rub'),
+            'KZT': price.get('MINE').get('kzt')
         },
         '1 USDT': {
-            'RUB': price.get('USDT').get('rub')
+            'RUB': price.get('USDT').get('rub'),
+            'KZT': price.get('USDT').get('kzt')
         }
     }
     return exch_rate
@@ -66,26 +69,42 @@ def parsing_web():
         interval='1m', )
     usdt_rub_price = usdt_rub_tv.get_analysis().indicators['close']
 
+    # Курс KZT (Тенге) к доллару
+    usd_kzt_tv = TA_Handler(
+        symbol='USDKZT',
+        screener='forex',
+        exchange='FX_IDC',
+        interval='1m', )
+    usd_kzt_price = usd_kzt_tv.get_analysis().indicators['close']
+
     price_dict = {
         'PLEX': {
             'mine': plex_mine_price,
             'usdt': plex_usdt_price,
-            'rub': (plex_usdt_price * usdt_rub_price)
+            'rub': (plex_usdt_price * usdt_rub_price),
+            'kzt': (plex_usdt_price * usd_kzt_price)
         },
         'MINE': {
             'plex': (1 / plex_mine_price),
             'usdt': (plex_usdt_price / plex_mine_price),
-            'rub': (plex_usdt_price * usdt_rub_price / plex_mine_price)
+            'rub': (plex_usdt_price * usdt_rub_price / plex_mine_price),
+            'kzt': (plex_usdt_price * usd_kzt_price / plex_mine_price)
         },
         'USDT': {
             'plex': (1 / plex_usdt_price),
             'mine': (plex_mine_price / plex_usdt_price),
-            'rub': usdt_rub_price
+            'rub': usdt_rub_price,
+            'kzt': usd_kzt_price
         },
         'RUB': {
             'plex': (1 / plex_usdt_price / usdt_rub_price),
             'mine': (plex_mine_price / plex_usdt_price / usdt_rub_price),
             'usdt': (1 / usdt_rub_price)
+        },
+        'KZT': {
+            'plex': (1 / plex_usdt_price / usd_kzt_price),
+            'mine': (plex_mine_price / plex_usdt_price / usd_kzt_price),
+            'usdt': (1 / usd_kzt_price)
         }
     }
     return price_dict
@@ -122,8 +141,9 @@ def menu_msg(message):
         b_mine = types.KeyboardButton('MINE')
         b_usdt = types.KeyboardButton('USDT')
         b_rub = types.KeyboardButton('RUB')
+        b_kzt = types.KeyboardButton('KZT')
         back = types.KeyboardButton('Курсы валют')
-        tickets.add(b_plex, b_mine, b_usdt, b_rub, back)
+        tickets.add(b_plex, b_mine, b_usdt, b_rub, b_kzt, back)
         msg = MPCalc_bot.send_message(message.chat.id, text='Выберите тикет', reply_markup=tickets)
         MPCalc_bot.register_next_step_handler(msg, ticket_msg)
     elif message.text == 'Курсы валют':
