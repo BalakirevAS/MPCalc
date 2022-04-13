@@ -3,6 +3,7 @@ import requests
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from tradingview_ta import TA_Handler
 import telebot
 from telebot import types
@@ -49,7 +50,8 @@ def parsing_web():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
-    mp_driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+    service = Service(os.environ.get("CHROMEDRIVER_PATH")
+    mp_driver = webdriver.Chrome(service=service, chrome_options=chrome_options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
     plex_mine_price = float(mp_driver.find_element(By.CLASS_NAME, value='Header').text)
