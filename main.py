@@ -46,8 +46,8 @@ def exchange_rate():  # Курс монет
 def parsing_web():
     # Курс plex в mine по explorer
     # mp_driver = webdriver.Chrome()
-    GOOGLE_CHROME_BIN = /app/.apt/usr/bin/google-chrome
-    CHROMEDRIVER_PATH = /app/.chromedriver/bin/chromedriver
+    GOOGLE_CHROME_BIN = '/app/.apt/usr/bin/google-chrome'
+    CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
     options = Options()
     options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     options.add_argument("--headless")
