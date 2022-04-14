@@ -50,7 +50,7 @@ def parsing_web():
     options.add_argument("--headless")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
-    service = Service("chromedriver.exe")
+    service = Service(str(os.environ.get('CHROMEDRIVER_PATH')))
     mp_driver = webdriver.Chrome(service=service, options=options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
