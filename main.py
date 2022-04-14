@@ -4,6 +4,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from tradingview_ta import TA_Handler
 import telebot
 from telebot import types
@@ -45,9 +46,12 @@ def exchange_rate():  # Курс монет
 def parsing_web():
     # Курс plex в mine по explorer
     # mp_driver = webdriver.Chrome()
-    options = webdriver.ChromeOptions()
+    GOOGLE_CHROME_BIN = /app/.apt/usr/bin/google-chrome
+    CHROMEDRIVER_PATH = /app/.chromedriver/bin/chromedriver
+    options = Options()
     options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     options.add_argument("--headless")
+    options.add_argument("--example-flag")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
     service = Service(str(os.environ.get('CHROMEDRIVER_PATH')))
