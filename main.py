@@ -119,7 +119,7 @@ def parsing_web():
 price_t = dict()
 msg_list = dict()
 
-TOKEN = '5110887553:AAHnM3w5U0FsvstxFG2lleN5kvvakcRubEE'
+TOKEN = '5110887553:AAE1lDFwWu6axLhk999LtUcjLgGwo8lFFbk'
 MPCalc_bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
