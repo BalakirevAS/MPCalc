@@ -3,3 +3,4 @@ requests~=2.27.1
 telebot~=0.0.4
 selenium~=4.1.2
 beautifulsoup4~=4.10.0
+tradingview-ta==3.2.10
