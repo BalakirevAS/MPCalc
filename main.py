@@ -45,17 +45,12 @@ def exchange_rate():  # Курс монет
 
 def parsing_web():
     # Курс plex в mine по explorer
-    # mp_driver = webdriver.Chrome()
-    GOOGLE_CHROME_BIN = '/app/.apt/usr/bin/google-chrome'
-    CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
-    options = Options()
-    options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-    options.add_argument("--headless")
-    options.add_argument("--example-flag")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--no-sandbox")
-    service = Service(str(os.environ.get('CHROMEDRIVER_PATH')))
-    mp_driver = webdriver.Chrome(service=service, options=options)
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
     plex_mine_price = float(mp_driver.find_element(By.CLASS_NAME, value='Header').text)
