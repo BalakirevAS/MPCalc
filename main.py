@@ -45,13 +45,14 @@ def exchange_rate():  # Курс монет
 
 def parsing_web():
     # Курс plex в mine по explorer
-    chrome_options = Options()
-    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--no-sandbox")
-    service = Service(executable_path=ChromeDriverManager().install())
-    mp_driver = webdriver.Chrome(service=service, options=chrome_options)
+    options = Options()
+    options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    options.add_argument("--headless")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
+    # service = Service(ChromeDriverManager().install())
+    service = Service("chromedriver")
+    mp_driver = webdriver.Chrome(service=service, options=options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
     plex_mine_price = float(mp_driver.find_element(By.CLASS_NAME, value='Header').text)
@@ -117,7 +118,7 @@ def parsing_web():
 price_t = dict()
 msg_list = dict()
 
-TOKEN = '5110887553:AAE1lDFwWu6axLhk999LtUcjLgGwo8lFFbk'
+TOKEN = '5110887553:AAFzcjYKJifI62FW4rZCGDeWt_u94JZ_a04'
 MPCalc_bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
