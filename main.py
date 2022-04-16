@@ -55,7 +55,7 @@ def parsing_web():
     driver = webdriver.Chrome(service=service, options=chrome_options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
-    plex_mine_price = float(mp_driver.find_element(By.CLASS_NAME, value='Header').text)
+    plex_mine_price = float(mp_driver.findElement(By.CLASS_NAME('Header')).text)
     mp_driver.quit()
 
     # Курс plex в usdt на CoinGecko
