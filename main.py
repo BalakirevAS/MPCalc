@@ -13,7 +13,6 @@ import os
 from flask import Flask, request
 
 
-
 def calculator(summ, coin_dict):  # Калькулятор стоимости от общей суммы
     answer = {}
     for ticket, price in coin_dict.items():
@@ -46,21 +45,23 @@ def exchange_rate():  # Курс монет
 
 def parsing_web():
     # Курс plex в mine по explorer
-    chrome_options = ChromeOptions()
+    chrome_options = Options()
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
     service = Service(executable_path=ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    mp_driver = webdriver.Chrome(service=service, options=chrome_options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
-    plex_mine_price = float(mp_driver.findElement(By.CLASS_NAME('Header')).text)
+    plex_mine_price = float(mp_driver.find_element(By.CLASS_NAME, value='Header').text)
     mp_driver.quit()
 
     # Курс plex в usdt на CoinGecko
     coingecko = requests.get(
-        'https://www.coingecko.com/ru/%D0%9A%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B2%D0%B0%D0%BB%D1%8E%D1%82%D1%8B/plex/usd#panel')
+        'https://www.coingecko.com/ru/'
+        '%D0%9A%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B2%D0%B0%D0%BB%D1%8E%D1%82%D1%8B/'
+        'plex/usd#panel')
     plex_coingecko = BeautifulSoup(coingecko.content, "lxml")
     plex_usdt_price = float(plex_coingecko.find('span', 'no-wrap').text[1:].replace(',', '.'))
 
@@ -190,8 +191,10 @@ def save_summ(message):
         MPCalc_bot.send_message(message.chat.id, 'Если бот не отвечает, введите повторно команду /start.'
                                                  '\nВсе предложения и пожелания по работе бота'
                                                  ' вы можете написать мне в личку @ASBalakirev.'
-                                                 '\nБот бесплатный, но для поддержания хостинга и дальнейшего совершенствования, '
-                                                 'или если захотите просто отблагодарить за работу, приму mine или plex.'
+                                                 '\nБот бесплатный, но для поддержания хостинга'
+                                                 ' и дальнейшего совершенствования, '
+                                                 'или если захотите просто отблагодарить за работу, '
+                                                 'приму mine или plex.'
                                                  '\nМой ID: 452516701.')
         msg = MPCalc_bot.send_message(message.chat.id, 'Выберите действие:')
         MPCalc_bot.register_next_step_handler(msg, ticket_msg)
