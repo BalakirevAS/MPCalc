@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from tradingview_ta import TA_Handler
 import telebot
 from telebot import types
@@ -45,12 +46,13 @@ def exchange_rate():  # Курс монет
 
 def parsing_web():
     # Курс plex в mine по explorer
-    chrome_options = webdriver.ChromeOptions()
+    chrome_options = ChromeOptions()
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+    service = Service(executable_path=ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
     plex_mine_price = float(mp_driver.find_element(By.CLASS_NAME, value='Header').text)
