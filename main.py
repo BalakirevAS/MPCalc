@@ -1,16 +1,16 @@
 import time
-import requests
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from tradingview_ta import TA_Handler
 import telebot
 from telebot import types
-import os
-from flask import Flask, request
+from xvfbwrapper import Xvfb
+# import os
+# from flask import Flask, request
 
 
 def calculator(summ, coin_dict):  # Калькулятор стоимости от общей суммы
@@ -44,14 +44,17 @@ def exchange_rate():  # Курс монет
 
 
 def parsing_web():
+    vdisplay = Xvfb()
+    vdisplay.start()
     # Курс plex в mine по explorer
+    # CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
+    # GOOGLE_CHROME_BIN = '/app/.apt/usr/bin/google-chrome'
     options = Options()
-    options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    # options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     options.add_argument("--headless")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
-    # service = Service(ChromeDriverManager().install())
-    service = Service("chromedriver")
+    service = Service(ChromeDriverManager().install())
     mp_driver = webdriver.Chrome(service=service, options=options)
     mp_driver.get("https://explorer.mineplex.io/")
     time.sleep(1)
@@ -59,12 +62,13 @@ def parsing_web():
     mp_driver.quit()
 
     # Курс plex в usdt на CoinGecko
-    coingecko = requests.get(
-        'https://www.coingecko.com/ru/'
-        '%D0%9A%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B2%D0%B0%D0%BB%D1%8E%D1%82%D1%8B/'
-        'plex/usd#panel')
-    plex_coingecko = BeautifulSoup(coingecko.content, "lxml")
-    plex_usdt_price = float(plex_coingecko.find('span', 'no-wrap').text[1:].replace(',', '.'))
+    coingecko = webdriver.Chrome(service=service, options=options)
+    coingecko.get('https://www.coingecko.com/ru/%D0%9A%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B2%D0%B0%D0%BB%D1%8E%D1%82%D1%8B/plex/usd#panel')
+    html = coingecko.page_source
+    plex_coingecko = BeautifulSoup(html, "lxml")
+    plex_usdt_price = float(plex_coingecko.find('span', 'no-wrap').text[:-2].replace(',', '.'))
+    coingecko.quit()
+    vdisplay.stop()
 
     # Курс usdt в рублях на Binance
     usdt_rub_tv = TA_Handler(
@@ -118,9 +122,9 @@ def parsing_web():
 price_t = dict()
 msg_list = dict()
 
-TOKEN = '5110887553:AAFzcjYKJifI62FW4rZCGDeWt_u94JZ_a04'
+TOKEN = '5110887553:AAHMHaTkUghOlLp_hEjT8LBU-iSosbrNHGs'
 MPCalc_bot = telebot.TeleBot(TOKEN)
-server = Flask(__name__)
+# server = Flask(__name__)
 
 @MPCalc_bot.message_handler(commands=['start'])
 def greeting_msg(message):
@@ -205,23 +209,24 @@ def save_summ(message):
         MPCalc_bot.register_next_step_handler(msg, save_summ)
 
 
-@server.route('/' + TOKEN, methods=['POST'])
-def getMessage():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    MPCalc_bot.process_new_updates([update])
-    return "!", 200
-
-
-@server.route("/")
-def webhook():
-    MPCalc_bot.remove_webhook()
-    MPCalc_bot.set_webhook(url='https://mp-calulator.herokuapp.com/' + TOKEN)
-    return "!", 200
-
-
-if __name__ == "__main__":
-    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+# @server.route('/' + TOKEN, methods=['POST'])
+# def getMessage():
+#     json_string = request.get_data().decode('utf-8')
+#     update = telebot.types.Update.de_json(json_string)
+#     MPCalc_bot.process_new_updates([update])
+#     return "!", 200
+# #
+# #
+# @server.route("/")
+# def webhook():
+#     MPCalc_bot.remove_webhook()
+#     MPCalc_bot.set_webhook(url='/' + TOKEN)
+#     return "!", 200
+#
+#
+# if __name__ == "__main__":
+#     parsing_web()
+    # server.run(host="127.0.0.1", port=int(os.environ.get('PORT', 5000)))
 
 
 MPCalc_bot.infinity_polling()
